@@ -1,0 +1,7 @@
+.DS_Store
+*.MD
+!README.md
+
+.idea
+.venv
+.env
