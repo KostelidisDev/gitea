@@ -63,15 +63,30 @@ Traefik is configured to allow encoded `/` (`%2F`) and `%` (`%25`) in paths, whi
 
 | Volume | Contents |
 | --- | --- |
-| `gitea_data` | Repositories, config (`app.ini`), attachments, avatars |
-| `gitea_packages` | Package registry storage (network share) |
-| `gitea_database_data` | PostgreSQL data |
+| `gitea-data` | Repositories, config (`app.ini`), attachments, avatars |
+| `gitea-packages` | Package registry storage (network share) |
+| `gitea-database-data` | PostgreSQL data |
 
-The volume names are set explicitly so they match volumes from earlier deployments.
+The database volume is mounted at `/var/lib/postgresql`, the Postgres 18 image's default layout, so the data lives under `18/docker` inside the volume.
 
 > [!CAUTION]
-> - The database volume is mounted at `/var/lib/postgresql/18` because the existing data lives under `18/docker`. Changing the mount path makes Postgres start with an empty database.
+> - Renaming a volume or changing the database mount path makes Compose use a new, empty volume. Migrate the data first (see below).
 > - Changing `POSTGRES_DB` or `POSTGRES_USER` on an initialised volume does not rename the database or user. Gitea will fail to connect.
+
+### Migrating from the old volume names
+
+Earlier deployments used `gitea_data`, `gitea_packages` and `gitea_database_data`, with the database mounted at `/var/lib/postgresql/18`. To move the data into the new volumes:
+
+```sh
+docker compose down
+docker compose create   # creates the new, empty volumes without starting anything
+docker run --rm -v gitea_data:/from:ro -v gitea-data:/to alpine cp -a /from/. /to/
+docker run --rm -v gitea_database_data:/from:ro -v gitea-database-data:/to alpine \
+  sh -c 'mkdir -p /to/18 && cp -a /from/. /to/18/'
+docker compose up -d
+```
+
+The old database volume holds `docker/` at its root, so it is copied into `18/` to match the new mount. `gitea-packages` needs no copy: it points to the same network share. Keep the old volumes until you have checked that everything works, then remove them with `docker volume rm`.
 
 ## Operations
 
