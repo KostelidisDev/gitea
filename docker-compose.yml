@@ -31,9 +31,9 @@ services:
       GITEA__database__HOST: database:5432
       GITEA__database__NAME: "${POSTGRES_DB:-gitea}"
       GITEA__database__USER: "${POSTGRES_USER:-gitea}"
-      GITEA__database__PASSWD__FILE: /run/secrets/postgres_password
+      GITEA__database__PASSWD__FILE: /run/secrets/postgres-password
     secrets:
-      - postgres_password
+      - postgres-password
     ports:
       # Git over SSH goes straight to Gitea — Traefik and its IP allowlist don't apply.
       # Docker-published ports also bypass ufw; restrict via DOCKER-USER or a bind IP.
@@ -93,13 +93,11 @@ services:
       TZ: "${TZ:-Europe/Athens}"
       POSTGRES_DB: "${POSTGRES_DB:-gitea}"
       POSTGRES_USER: "${POSTGRES_USER:-gitea}"
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
     secrets:
-      - postgres_password
+      - postgres-password
     volumes:
-      # Keep this path: the existing volume holds PGDATA under 18/docker.
-      # Remounting at /var/lib/postgresql would make Postgres start with an EMPTY database.
-      - database_data:/var/lib/postgresql/18
+      - database-data:/var/lib/postgresql
     networks:
       - database
     healthcheck:
@@ -131,19 +129,18 @@ networks:
     internal: true
 
 volumes:
-  # Explicit names match what Compose already generated, so existing data is kept.
   data:
-    name: gitea_data
+    name: gitea-data
   packages:
-    name: gitea_packages
+    name: gitea-packages
     driver: local
     driver_opts:
       type: "${PACKAGES_MOUNT_TYPE:?PACKAGES_MOUNT_TYPE is required}"
       o: "${PACKAGES_MOUNT_O:?PACKAGES_MOUNT_O is required}"
       device: "${PACKAGES_MOUNT_DEVICE:?PACKAGES_MOUNT_DEVICE is required}"
-  database_data:
-    name: gitea_database_data
+  database-data:
+    name: gitea-database-data
 
 secrets:
-  postgres_password:
+  postgres-password:
     environment: POSTGRES_PASSWORD
