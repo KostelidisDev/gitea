@@ -124,9 +124,19 @@ services:
 networks:
   gitea:
     name: gitea
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: "${GITEA_NETWORK_SUBNET_V4:-10.100.0.0/24}"
+        - subnet: "${GITEA_NETWORK_SUBNET_V6:-fd00:100::/64}"
   database:
     name: gitea_database
     internal: true
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: "${DATABASE_NETWORK_SUBNET_V4:-10.100.1.0/24}"
+        - subnet: "${DATABASE_NETWORK_SUBNET_V6:-fd00:100:1::/64}"
 
 volumes:
   data:

@@ -36,10 +36,19 @@ All settings live in `.env`. See [`.env.example`](.env.example) for the full lis
 | `GITEA_SSH_BIND` | Host interface for the SSH port (default `0.0.0.0`). Set to a VPN IP to keep SSH private. |
 | `PACKAGES_MOUNT_TYPE` / `_O` / `_DEVICE` | Network share options for the packages volume. **Required.** |
 | `IPV4_ALLOWLIST` / `IPV6_ALLOWLIST` | Source ranges allowed through Traefik (web UI, API, registry). |
+| `GITEA_NETWORK_SUBNET_V4` / `_V6` | IPv4 and IPv6 ranges of the `gitea` network shared with Traefik (default `10.100.0.0/24`, `fd00:100::/64`). |
+| `DATABASE_NETWORK_SUBNET_V4` / `_V6` | IPv4 and IPv6 ranges of the internal `gitea_database` network (default `10.100.1.0/24`, `fd00:100:1::/64`). |
 | `GITEA_TAG` / `POSTGRES_TAG` | Pinned image versions. |
 | `POSTGRES_DB` / `POSTGRES_USER` | Database name and user. Must match an existing database. |
 | `TZ` | Container timezone (default `Europe/Athens`). |
 | `*_CPU_LIMIT`, `*_MEM_LIMIT`, `*_MEM_RESERVATION`, `*_PIDS_LIMIT` | Resource limits for `gitea` and `database`. |
+
+## Networks
+
+Both networks are dual-stack (IPv4 and IPv6) with fixed address ranges set in `.env`. Pick ranges that don't overlap other Docker networks, the LAN or a VPN.
+
+> [!NOTE]
+> Docker doesn't change the settings of an existing network. After enabling IPv6 or changing a range, recreate the networks: disconnect Traefik (`docker network disconnect gitea <traefik-container>`), run `docker compose down && docker compose up -d`, then reconnect Traefik or restart its stack.
 
 ## Access
 
