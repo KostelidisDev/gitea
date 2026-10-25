@@ -9,7 +9,7 @@ x-logging: &default-logging
 
 services:
   gitea:
-    image: docker.gitea.com/gitea:${GITEA_TAG:-28.0.0}
+    image: docker.gitea.com/gitea:28.2.0
     container_name: gitea
     restart: unless-stopped
     stop_grace_period: 30s
@@ -81,7 +81,7 @@ services:
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
   database:
-    image: postgres:${POSTGRES_TAG:-18.6-alpine}
+    image: postgres:18.6-alpine
     container_name: gitea-database
     restart: unless-stopped
     stop_grace_period: 60s
