@@ -38,8 +38,6 @@ All settings live in `.env`. See [`.env.example`](.env.example) for the full lis
 | `IPV4_ALLOWLIST` / `IPV6_ALLOWLIST` | Source ranges allowed through Traefik (web UI, API, registry). |
 | `GITEA_NETWORK_SUBNET_V4` / `_V6` | IPv4 and IPv6 ranges of the `gitea` network shared with Traefik (default `10.100.0.0/24`, `fd00:100::/64`). |
 | `DATABASE_NETWORK_SUBNET_V4` / `_V6` | IPv4 and IPv6 ranges of the internal `gitea_database` network (default `10.100.1.0/24`, `fd00:100:1::/64`). |
-| `GITEA_TAG` / `POSTGRES_TAG` | Pinned image versions. |
-| `POSTGRES_DB` / `POSTGRES_USER` | Database name and user. Must match an existing database. |
 | `TZ` | Container timezone (default `Europe/Athens`). |
 | `*_CPU_LIMIT`, `*_MEM_LIMIT`, `*_MEM_RESERVATION`, `*_PIDS_LIMIT` | Resource limits for `gitea` and `database`. |
 
@@ -102,7 +100,7 @@ The old database volume holds `docker/` at its root, so it is copied into `18/` 
 ```sh
 docker compose ps                  # status and health
 docker compose logs -f gitea       # follow Gitea logs
-docker compose pull && docker compose up -d   # upgrade after bumping *_TAG
+docker compose pull && docker compose up -d   # upgrade
 ```
 
 Back up the database:
